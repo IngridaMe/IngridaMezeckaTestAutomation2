@@ -59,7 +59,7 @@ public class SwagLabsTest {
         Thread.sleep(3000);
         System.out.println("izpilda testu");
     }
-
+// test 
     @Test
     public void testSucessfullLogin() throws InterruptedException {
         driver.get(SWAGLABS_URL);
@@ -93,7 +93,7 @@ public class SwagLabsTest {
 
     @Test
     public void testSamplePage(){
-        d
+
     }
 
     @AfterMethod(alwaysRun = true)
