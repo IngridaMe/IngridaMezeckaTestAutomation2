@@ -9,6 +9,12 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import pageObject.Footer;
+import pageObject.LoginPage;
+import pageObject.ProductsPage;
+
+import java.time.Duration;
+import java.util.List;
 
 public class SwagLabsTest {
 
@@ -23,6 +29,9 @@ public class SwagLabsTest {
         System.out.println("atver testu");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
+        driver.manage()
+                .timeouts()
+                .implicitlyWait(Duration.ofSeconds(10));
 
 
     }
@@ -59,7 +68,28 @@ public class SwagLabsTest {
         Thread.sleep(3000);
         System.out.println("izpilda testu");
     }
-// test 
+
+    @Test
+    public void testFooterCopyRightText(){
+        driver.get(SWAGLABS_URL);
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("standard_user", "secret_sauce");
+        Footer footer = new Footer(driver);
+        String actualString = footer.copyRightText().getText();
+        String expectedString = "© 2022 Sauce Labs. All Rights Reserved. Terms of Service | Privacy Policy";
+        Assert.assertEquals(actualString, expectedString);
+    }
+
+
+    @Test
+    public void testSuccessLoginPOM() {
+        driver.get(SWAGLABS_URL);
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("standard_user", "secret_sauce");
+        ProductsPage productsPage = new ProductsPage(driver);
+        Assert.assertEquals(productsPage.getPageTitle().getText(), "PRODUCTS");
+    }
+
     @Test
     public void testSucessfullLogin() throws InterruptedException {
         driver.get(SWAGLABS_URL);
@@ -90,10 +120,76 @@ public class SwagLabsTest {
     }
 
 
+    @Test
+    public void testErrorMassageWithoutPasswordWithPOM(){
+        driver.get(SWAGLABS_URL);
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("Ingrida", "");
+//        loginPage.getUserNameField().sendKeys("standard_user");
+//        loginPage.getPasswordField().sendKeys("");
+//        loginPage.getLogginButton().click();
+        String actualText = loginPage.getErrorMessageTextField().getText();
+        String expectedErrorMessage = "Epic sadface: Password is required";
+        Assert.assertEquals(actualText, expectedErrorMessage);
+    }
 
     @Test
-    public void testSamplePage(){
+    public void testErrorMessageWithoutUsernameWPOM(){
+        driver.get(SWAGLABS_URL);
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("", "parole");
+//        loginPage.getUserNameField().sendKeys("");
+//        loginPage.getPasswordField().sendKeys("parole");
+//        loginPage.getLogginButton().click();
+        String actualText = loginPage.getErrorMessageTextField().getText();
+        String expectedErrorMessage = "Epic sadface: Password is required";
+        Assert.assertEquals(actualText,expectedErrorMessage);
+    }
 
+
+    @Test
+    public void testSuccessLogin() {
+        driver.get(SWAGLABS_URL);
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("standard_user", "secret_sauce");
+        ProductsPage productsPage = new ProductsPage(driver);
+        Assert.assertEquals(productsPage.getPageTitle().getText(), "PRODUCTS");
+    }
+
+    @Test
+    public void testSamplePage() throws InterruptedException {
+    driver.get(LOCAL_URL);
+
+    WebElement vards = driver.findElement(By.id("fNameID"));
+    vards.sendKeys("Ingrida");
+
+    WebElement uzvards = driver.findElement(By.id("lNameID"));
+    uzvards.sendKeys("Mezecka");
+
+   WebElement informacija = driver.findElement(By.name("description"));
+   informacija.clear();
+   informacija.sendKeys("Šī ir informācija par mani");
+
+
+   WebElement studentCheckBox = driver.findElement(By.id("studentID"));
+   studentCheckBox.click();
+
+   WebElement radioButtonJava = driver.findElement(By.id("javaID"));
+        System.out.println(radioButtonJava.isSelected());
+   radioButtonJava.click();
+        System.out.println(radioButtonJava.isSelected());
+
+
+        Select milakaKrasaDropDown = new Select(driver.findElement(By.id("colorsID")));
+        milakaKrasaDropDown.selectByIndex(0);
+        milakaKrasaDropDown.selectByIndex(1);
+
+        List<WebElement> saraksts = milakaKrasaDropDown.getOptions();
+        for (int i = 0; i < saraksts.size(); i++) {
+            System.out.println(saraksts.get(i).getText());
+
+        }
+    Thread.sleep(5000);
     }
 
     @AfterMethod(alwaysRun = true)
